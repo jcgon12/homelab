@@ -1,0 +1,39 @@
+# Este archivo define todos los servicios que necesita Immich
+# para funcionar como tu nube de fotos personal
+
+services:
+  # Servicio principal de Immich - la app web
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:release
+    ports:
+      - "2283:2283"  # puerto para acceder desde el navegador
+    volumes:
+      - /mnt/fotos:/usr/src/app/upload  # donde se guardan tus fotos
+    environment:
+      - DB_PASSWORD=Ensenada2026!
+      - DB_USERNAME=postgres
+      - DB_DATABASE_NAME=immich
+    depends_on:
+      - database
+      - redis
+    restart: always  # si se cae, se levanta solo
+
+  # Base de datos donde Immich guarda info de tus fotos
+  database:
+    image: tensorchord/pgvecto-rs:pg14-v0.2.0
+    environment:
+      - POSTGRES_PASSWORD=Ensenada2026!
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=immich
+    volumes:
+      - db_data:/var/lib/postgresql/data  # datos de la base de datos
+    restart: always
+
+  # Cache para que Immich sea mas rapido
+  redis:
+    image: redis:6.2
+    restart: always
+
+# Volumenes donde Docker guarda los datos permanentes
+volumes:
+  db_data:
