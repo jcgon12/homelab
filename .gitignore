@@ -2,3 +2,5 @@
 
 # Archivos con contraseñas - nunca subir a GitHub
 .env
+# Configuracion de Frigate tiene credenciales
+frigate/config/
