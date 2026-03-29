@@ -1,0 +1,16 @@
+# Configuracion global de Prometheus
+global:
+  # Cada cuanto recolecta metricas de los servidores
+  scrape_interval: 15s
+
+# Lista de servidores a monitorear
+scrape_configs:
+  # Prometheus se monitorea a si mismo
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node exporter - metricas del servidor (CPU, RAM, disco, red)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']

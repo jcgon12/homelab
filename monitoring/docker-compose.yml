@@ -1,0 +1,58 @@
+# Stack completo de monitoreo
+# Prometheus  → recolecta metricas de todo
+# Node Exporter → expone metricas del servidor (CPU, RAM, disco)
+# Grafana     → muestra todo en dashboards bonitos
+
+services:
+
+  # Recolector de metricas - el cerebro del monitoreo
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"   # Panel web de Prometheus
+    volumes:
+      # Le pasamos nuestra configuracion
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      # Donde guarda los datos de metricas
+      - prometheus_data:/prometheus
+    restart: always
+
+  # Exporta metricas del servidor donde corre Docker
+  # CPU, RAM, disco, red, procesos - todo
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"   # Puerto de metricas (Prometheus las lee de aqui)
+    volumes:
+      # Acceso de solo lectura al sistema para leer metricas
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+    restart: always
+
+  # Dashboard visual - aqui es donde se ve todo bonito
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"   # Panel web de Grafana
+    volumes:
+      # Donde guarda dashboards y configuracion
+      - grafana_data:/var/lib/grafana
+    environment:
+      # Usuario y contrasena por defecto de Grafana
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=homelab2026
+    depends_on:
+      - prometheus
+    restart: always
+
+# Volumenes para guardar datos permanentes
+volumes:
+  prometheus_data:
+  grafana_data:
