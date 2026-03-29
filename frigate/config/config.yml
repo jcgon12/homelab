@@ -1,0 +1,32 @@
+# Configuracion principal de Frigate
+# Define las camaras y como procesarlas
+
+mqtt:
+  # Desactivamos MQTT por ahorita, es para integracion con Home Assistant
+  enabled: false
+
+cameras:
+  # Nombre de tu camara, puede ser cualquier nombre
+  tapo_c200:
+    ffmpeg:
+      inputs:
+        # URL completa de tu camara Tapo por RTSP
+        - path: rtsp://admin1:Ecosat201@192.168.1.115/stream1
+          # Para que se use en deteccion y grabacion
+          roles:
+            - detect
+            - record
+
+    detect:
+      # Resolucion de deteccion de movimiento
+      width: 1280
+      height: 720
+      # Cuadros por segundo para deteccion
+      fps: 5
+
+    record:
+      # Activamos grabacion
+      enabled: true
+      retain:
+        # Cuantos dias guardamos grabaciones
+        days: 7

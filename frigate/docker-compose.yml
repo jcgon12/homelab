@@ -1,0 +1,34 @@
+# Este archivo levanta Frigate - NVR con deteccion de movimiento
+# NVR = Network Video Recorder, graba y analiza camaras IP
+
+services:
+  frigate:
+    # Imagen oficial de Frigate
+    image: ghcr.io/blakeblackshear/frigate:stable
+    
+    # Nombre del container
+    container_name: frigate
+    
+    # Privilegios especiales para acceder al hardware de video
+    privileged: true
+    
+    ports:
+      - "5000:5000"   # Panel web de Frigate
+      - "8554:8554"   # RTSP re-stream (ver camaras desde otros apps)
+    
+    volumes:
+      # Archivo de configuracion que creamos
+      - ./config:/config
+      # Donde se guardan las grabaciones
+      - /mnt/frigate:/media/frigate
+      # Memoria compartida para procesamiento de video
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000  # 1GB de cache en RAM
+    
+    environment:
+      # Zona horaria correcta para timestamps en grabaciones
+      - TZ=America/Tijuana
+    
+    restart: always  # Se levanta solo si se cae
